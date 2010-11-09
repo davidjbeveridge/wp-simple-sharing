@@ -27,14 +27,50 @@ License: MIT
 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 	THE SOFTWARE.
- */
+*/
+
+error_reporting(-1);
 
 // Create Options pages:
 
+
 require_once('CustomOptionsPage.php');
 
+$fields = array();
+$fields[] = array('type' => 'paragraph', 'name' => 'Please select the locations where you would like the sharing buttons added:');
+$fields[] = array('id' => 'post','name' => 'posts', 'type' => 'checkbox','value'=>'1');
+$fields[] = array('id' => 'page','name' => 'pages','type' => 'checkbox','value'=>'1');
+$fields[] = array('id' => 'archive','name' => 'archives','type' => 'checkbox','value'=>'1');
+$fields[] = array('id' => 'category','name' => 'categories','type' => 'checkbox','value'=>'1');
+$fields[] = array('id' => 'attachment','name' => 'attachments','type' => 'checkbox','value'=>'1');
+$fields[] = array('id' => 'tag','name' => 'posts','type' => 'checkbox','value'=>'1');
+$fields[] = array('id' => 'home','name' => 'home page','type' => 'checkbox','value'=>'1');
+$fields[] = array('id' => 'search','name' => 'search results','type' => 'checkbox','value'=>'1');
 
+$ssOpts = new CustomOptionspage('options','simplesharing','Simple Sharing','manage_options',$fields);
 
 
 function simplesharing_add_links($content)	{
+	global $ssOpts;
+	if(
+		(is_single() && $ssOpts->getOption('post')) OR
+		(is_page() && $ssOpts->getOption('page')) OR
+		(is_archive() && $ssOpts->getOption('archive')) OR
+		(is_category() && $ssOpts->getOption('category')) OR
+		(is_attachment() && $ssOpts->getOption('attachment')) OR
+		(is_tag() && $ssOpts->getOption('tag')) OR
+		(is_home() && $ssOpts->getOption('home')) OR
+		(is_search() && $ssOpts->getOption('search'))
+	)	{
+		$content .= '<div class="share">
+							Share:
+							<a href="http://twitter.com/home?status='.urlencode('Currently Reading '.get_permalink()).'" target="_blank">Twitter</a>,
+							<a href="http://www.facebook.com/sharer.php?u='.urlencode(get_permalink()).'" target="_blank">Facebook</a>,
+							<a href="mailto:?subject='.urlencode(get_the_title()).'&body='.urlencode(get_permalink()).'">Email</a>
+						</div>
+		';
+	}
+	return $content;
 }
+
+add_filter('the_content','simplesharing_add_links');

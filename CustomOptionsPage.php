@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__).'/FormTablePresenter.php');
+require_once('FormTablePresenter.php');
 
 if(!class_exists('CustomOptionsPage'))	{
 	/**
@@ -85,7 +85,7 @@ if(!class_exists('CustomOptionsPage'))	{
 			<div class="icon32" id="icon-options-general"><br></div>
 			<div class="wrap">
 			<h2>'.$this->_name.' Options</h2>
-				<form enctype="multipart/form-data" method="post" action="'.get_bloginfo('wpurl').'/wp-admin/themes.php?page='.$this->_id.'">';
+				<form enctype="multipart/form-data" method="post" action="http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'">';
 			$output .= $presenter->getOutput();
 			$output .= '
 					<p>
