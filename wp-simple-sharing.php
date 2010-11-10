@@ -2,7 +2,7 @@
 /*
 Plugin Name: Simple Sharing
 Plugin URI: #
-Description: Adds share links for twitter, facebook, and email to blog posts.
+Description: Adds share links for twitter, facebook, and email to blog posts. Requires the NerdyIsBack Plugin Framework.
 Version: 0.1
 Author: David Beveridge
 Author URI: http://www.nerdyisback.com
@@ -29,8 +29,6 @@ License: MIT
 	THE SOFTWARE.
 */
 
-error_reporting(-1);
-
 // Create Options pages:
 
 
@@ -43,7 +41,7 @@ $fields[] = array('id' => 'page','name' => 'pages','type' => 'checkbox','value'=
 $fields[] = array('id' => 'archive','name' => 'archives','type' => 'checkbox','value'=>'1');
 $fields[] = array('id' => 'category','name' => 'categories','type' => 'checkbox','value'=>'1');
 $fields[] = array('id' => 'attachment','name' => 'attachments','type' => 'checkbox','value'=>'1');
-$fields[] = array('id' => 'tag','name' => 'posts','type' => 'checkbox','value'=>'1');
+$fields[] = array('id' => 'tag','name' => 'tags','type' => 'checkbox','value'=>'1');
 $fields[] = array('id' => 'home','name' => 'home page','type' => 'checkbox','value'=>'1');
 $fields[] = array('id' => 'search','name' => 'search results','type' => 'checkbox','value'=>'1');
 
@@ -51,23 +49,25 @@ $ssOpts = new CustomOptionspage('options','simplesharing','Simple Sharing','mana
 
 
 function simplesharing_add_links($content)	{
-	global $ssOpts;
-	if(
-		(is_single() && $ssOpts->getOption('post')) OR
-		(is_page() && $ssOpts->getOption('page')) OR
-		(is_archive() && $ssOpts->getOption('archive')) OR
-		(is_category() && $ssOpts->getOption('category')) OR
-		(is_attachment() && $ssOpts->getOption('attachment')) OR
-		(is_tag() && $ssOpts->getOption('tag')) OR
-		(is_home() && $ssOpts->getOption('home')) OR
-		(is_search() && $ssOpts->getOption('search'))
-	)	{
+	global $ssOpts,$post;
+	if( (
+			(is_single() && $ssOpts->getOption('post')) OR
+			(is_page() && $ssOpts->getOption('page')) OR
+			(is_archive() && $ssOpts->getOption('archive')) OR
+			(is_category() && $ssOpts->getOption('category')) OR
+			(is_attachment() && $ssOpts->getOption('attachment')) OR
+			(is_tag() && $ssOpts->getOption('tag')) OR
+			(is_home() && $ssOpts->getOption('home')) OR
+			(is_search() && $ssOpts->getOption('search'))
+		) && (in_array($post->post_type,array('post','page'))) )	{
 		$content .= '<div class="share">
-							Share:
-							<a href="http://twitter.com/home?status='.urlencode('Currently Reading '.get_permalink()).'" target="_blank">Twitter</a>,
-							<a href="http://www.facebook.com/sharer.php?u='.urlencode(get_permalink()).'" target="_blank">Facebook</a>,
-							<a href="mailto:?subject='.urlencode(get_the_title()).'&body='.urlencode(get_permalink()).'">Email</a>
-						</div>
+						<span class="shareText">Share</span>
+						<ul class="shareLinks">
+							<li><a href="http://twitter.com/home?status='.urlencode('Currently Reading '.get_permalink()).'" target="_blank">Twitter</a>,</li>
+							<li><a href="http://www.facebook.com/sharer.php?u='.urlencode(get_permalink()).'" target="_blank">Facebook</a>,</li>
+							<li><a href="mailto:?subject='.urlencode(get_the_title()).'&body='.urlencode(get_permalink()).'">Email</a></li>
+						<ul>
+					</div>
 		';
 	}
 	return $content;
