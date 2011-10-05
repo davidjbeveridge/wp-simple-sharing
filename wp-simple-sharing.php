@@ -32,8 +32,6 @@ License: MIT
 // Create Options pages:
 
 
-require_once('CustomOptionsPage.php');
-
 $fields = array();
 $fields[] = array('type' => 'paragraph', 'name' => 'Please select the locations where you would like the sharing buttons added:');
 $fields[] = array('id' => 'post','name' => 'posts', 'type' => 'checkbox','value'=>'1');
@@ -48,9 +46,10 @@ $fields[] = array('id' => 'search','name' => 'search results','type' => 'checkbo
 $ssOpts = new CustomOptionspage('options','simplesharing','Simple Sharing','manage_options',$fields);
 
 
-function simplesharing_add_links($content)	{
+function simplesharing_add_links($content,$force=FALSE)	{
 	global $ssOpts,$post;
-	if( (
+	if( $force OR (in_array($post->post_type,array('post','page'))) &&
+		(
 			(is_single() && $ssOpts->getOption('post')) OR
 			(is_page() && $ssOpts->getOption('page')) OR
 			(is_archive() && $ssOpts->getOption('archive')) OR
@@ -59,14 +58,14 @@ function simplesharing_add_links($content)	{
 			(is_tag() && $ssOpts->getOption('tag')) OR
 			(is_home() && $ssOpts->getOption('home')) OR
 			(is_search() && $ssOpts->getOption('search'))
-		) && (in_array($post->post_type,array('post','page'))) )	{
+		))	{
 		$content .= '<div class="share">
 						<span class="shareText">Share</span>
 						<ul class="shareLinks">
 							<li><a href="http://twitter.com/home?status='.urlencode('Currently Reading '.get_permalink()).'" target="_blank">Twitter</a>,</li>
 							<li><a href="http://www.facebook.com/sharer.php?u='.urlencode(get_permalink()).'" target="_blank">Facebook</a>,</li>
 							<li><a href="mailto:?subject='.urlencode(get_the_title()).'&body='.urlencode(get_permalink()).'">Email</a></li>
-						<ul>
+						</ul>
 					</div>
 		';
 	}
